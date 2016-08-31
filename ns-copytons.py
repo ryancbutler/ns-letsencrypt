@@ -114,6 +114,43 @@ def updateSSL(nitroNSIP,authToken, nscert, nspairname):
    response = requests.post(url, data=payload, headers=headers)
    print "Update Netscaler CERT: %s" % response.reason
 
+def createSSL(nitroNSIP,authToken, nscert, nspairname, nskey):
+   url = 'http://%s/nitro/v1/config/sslcertkey' % nitroNSIP
+   headers = {'Content-type': 'application/json','Cookie': authToken}
+   json_string = {
+   "sslcertkey": {
+       "certkey": nspairname,
+       "cert": nscert,
+       "key": nskey,}
+   }
+   payload = json.dumps(json_string)
+   response = requests.post(url, data=payload, headers=headers)
+   print "Create Netscaler CERT: %s" % response.reason
+
+def createSSLCA(nitroNSIP,authToken, nscert, nspairname):
+   url = 'http://%s/nitro/v1/config/sslcertkey' % nitroNSIP
+   headers = {'Content-type': 'application/json','Cookie': authToken}
+   json_string = {
+   "sslcertkey": {
+       "certkey": nspairname,
+       "cert": nscert,}
+   }
+   payload = json.dumps(json_string)
+   response = requests.post(url, data=payload, headers=headers)
+   print "Create Netscaler CA CERT: %s" % response.reason
+
+def linkSSL(nitroNSIP,authToken, nschainname, nspairname):
+   url = 'http://%s/nitro/v1/config/sslcertkey?action=link' % nitroNSIP
+   headers = {'Content-type': 'application/json','Cookie': authToken}
+   json_string = {
+   "sslcertkey": {
+       "certkey": nspairname,
+       "linkcertkeyname": nschainname,}
+   }
+   payload = json.dumps(json_string)
+   response = requests.post(url, data=payload, headers=headers)
+   print "Link Netscaler CERTS: %s" % response.reason
+
 authToken = getAuthCookie(nitroNSIP,nitroUser,nitroPass)
 if whattodo == "save":
    localcert = sys.argv[2]
@@ -128,4 +165,16 @@ elif whattodo == "challenge":
    token_value = sys.argv[3]
    respPol(nitroNSIP,authToken,nsresppol,token_filename)
    respAct(nitroNSIP,authToken,nsrespact,token_value)
+elif whattodo == "create":
+   localcert = sys.argv[2]
+   localkey = sys.argv[3]
+   localchain = sys.argv[4]
+   print "Create Netscaler Certificate"
+   sendFile(nitroNSIP,authToken,nscert,localcert,nscertpath)
+   sendFile(nitroNSIP,authToken,nskey,localkey,nscertpath)
+   sendFile(nitroNSIP,authToken,nschain,localchain,nscertpath)
+   createSSL(nitroNSIP,authToken, nscert, nspairname, nskey)
+   createSSLCA(nitroNSIP,authToken, nschain, nschainname)
+   linkSSL(nitroNSIP,authToken, nschainname, nspairname)
+   SaveNSConfig(nitroNSIP,authToken)
 logOut(nitroNSIP,authToken)
