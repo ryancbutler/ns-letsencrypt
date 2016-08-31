@@ -5,6 +5,7 @@ config.sh
 hook.sh
 certs/*
 archive/*
+accounts/*
 .acme-challenges/*
-ns-letsencrypt/mynsconfig.py
+mynsconfig.py
 *.pyc
