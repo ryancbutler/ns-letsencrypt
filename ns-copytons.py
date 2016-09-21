@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#Automates the certificate renewal process for Netscaler via REST API and letsencrypt.sh (https://github.com/lukas2511/letsencrypt.sh)
+#Automates the certificate renewal process for Netscaler via REST API and dehydrated (https://github.com/lukas2511/dehydrated)
 #USE AT OWN RISK
 
 #Imports
