@@ -151,7 +151,7 @@ def linkSSL(connectiontype,nitroNSIP,authToken, nschainname, nspairname):
    response = requests.post(url, data=payload, headers=headers, verify=False)
    print "Link Netscaler CERTS: %s" % response.reason
 
-authToken = getAuthCookie(nitroNSIP,nitroUser,nitroPass)
+authToken = getAuthCookie(connectiontype,nitroNSIP,nitroUser,nitroPass)
 if whattodo == "save":
    localcert = sys.argv[2]
    print "Updating Netscaler Certificate"
