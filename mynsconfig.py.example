@@ -3,7 +3,7 @@ nitroUser = "nsroot"
 nitroPass = "nsroot"
 
 #Use HTTP or HTTPs to connect to Netscaler
-connectiontype = "http"
+connectiontype = "https"
 
 #Certificate and private key file names on Netscaler	
 nspairname = "le-certificate";
