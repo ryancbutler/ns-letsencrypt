@@ -2,6 +2,9 @@ nitroNSIP = "192.168.2.54"
 nitroUser = "nsroot"
 nitroPass = "nsroot"
 
+#Use HTTP or HTTPs to connect to Netscaler
+connectiontype = "https"
+
 #Certificate and private key file names on Netscaler	
 nspairname = "le-certificate";
 nschainname = "le-chain";
