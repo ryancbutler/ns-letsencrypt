@@ -9,3 +9,5 @@ accounts/*
 .acme-challenges/*
 mynsconfig.py
 *.pyc
+www-temp/*
+chains/*
