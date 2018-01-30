@@ -19,6 +19,7 @@ deploy_challenge() {
     #   validation, this is what you want to put in the _acme-challenge
     #   TXT record. For HTTP validation it is the value that is expected
     #   be found in the $TOKEN_FILENAME file.
+    /root/ns-letsencrypt/ns-copytons.py challenge $TOKEN_FILENAME $TOKEN_VALUE
 }
 
 clean_challenge() {
