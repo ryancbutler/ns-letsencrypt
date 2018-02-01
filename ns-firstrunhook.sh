@@ -116,8 +116,8 @@ request_failure() {
 startup_hook() {
   # This hook is called before the cron command to do some initial tasks
   # (e.g. starting a webserver).
-
-  :
+  echo Testing Netscaler Connectivity
+  /root/ns-letsencrypt/ns-copytons.py test
 }
 
 exit_hook() {

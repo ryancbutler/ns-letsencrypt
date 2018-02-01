@@ -26,6 +26,7 @@ def getAuthCookie(connectiontype,nitroNSIP,nitroUser,nitroPass):
    }
    payload = json.dumps(json_string)
    response = requests.post(url, data=payload, headers=headers, verify=False)
+   response.raise_for_status()
    cookie = response.cookies['NITRO_AUTH_TOKEN']
    nitroCookie = 'NITRO_AUTH_TOKEN=%s' % cookie
    return nitroCookie
@@ -159,6 +160,8 @@ if whattodo == "save":
    sendFile(connectiontype,nitroNSIP,authToken,nscert,localcert,nscertpath)
    updateSSL(connectiontype,nitroNSIP,authToken, nscert, nspairname)
    SaveNSConfig(connectiontype,nitroNSIP,authToken)
+elif whattodo == "test":
+   print "Connectivity To Netscaler OK"
 elif whattodo == "challenge":
    print "Editing Challenge Policy"
    token_filename = sys.argv[2]

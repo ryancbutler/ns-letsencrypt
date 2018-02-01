@@ -19,7 +19,7 @@ deploy_challenge() {
     #   validation, this is what you want to put in the _acme-challenge
     #   TXT record. For HTTP validation it is the value that is expected
     #   be found in the $TOKEN_FILENAME file.
-	/root/ns-letsencrypt/ns-copytons.py challenge $TOKEN_FILENAME $TOKEN_VALUE
+    /root/ns-letsencrypt/ns-copytons.py challenge $TOKEN_FILENAME $TOKEN_VALUE
 }
 
 clean_challenge() {
@@ -53,7 +53,7 @@ deploy_cert() {
     #   The path of the file containing the intermediate certificate(s).
     # - TIMESTAMP
     #   Timestamp when the specified certificate was created.
-	/root/ns-letsencrypt/ns-copytons.py save $CERTFILE
+    /root/ns-letsencrypt/ns-copytons.py save $CERTFILE
 }
 
 unchanged_cert() {
@@ -117,8 +117,8 @@ exit_hook() {
 startup_hook() {
   # This hook is called before the cron command to do some initial tasks
   # (e.g. starting a webserver).
-
-  :
+  echo Testing Netscaler Connectivity
+  /root/ns-letsencrypt/ns-copytons.py test
 }
 
 HANDLER="$1"; shift
