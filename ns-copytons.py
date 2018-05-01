@@ -230,7 +230,7 @@ elif whattodo == "challenge":
    token_filename = sys.argv[2]
    token_value = sys.argv[3]
    challenge_domain = sys.argv[4]
-   domaincount = sys.argv[5]
+   int(domaincount) = sys.argv[5]
    polname = '%s-%s' % (nsresppol, challenge_domain)
    actname = '%s-%s' % (nsrespact, challenge_domain)
    print polname
