@@ -86,6 +86,7 @@ def CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actn
    headers = {'Content-type': 'application/json','Cookie': authToken}
    buildrule = 'HTTP.REQ.URL.CONTAINS(\"well-known/acme-challenge/%s\")' % token_filename
    print buildrule
+   print actname
    json_string = {
    "responderpolicy": {
        "name": polname,
