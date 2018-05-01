@@ -10,3 +10,4 @@ accounts/*
 mynsconfig.py
 *.pyc
 chains/*
+.counter*
