@@ -67,69 +67,69 @@ def sendFile(connectiontype,nitroNSIP,authToken,nscert,localcert,nscertpath):
    response = requests.post(url, data=payload, headers=headers, verify=False)
    print "CREATE CERT: %s" % response.reason
 
-def respPol(connectiontype,nitroNSIP,authToken,nsresppol,token_filename):
+def respPol(connectiontype,nitroNSIP,authToken,polname,token_filename):
    url = '%s://%s/nitro/v1/config/responderpolicy' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
    buildrule = 'HTTP.REQ.URL.CONTAINS(\"well-known/acme-challenge/%s\")' % token_filename
    print buildrule
    json_string = {
    "responderpolicy": {
-       "name": nsresppol,
+       "name": polname,
        "rule": buildrule,}
    }
    payload = json.dumps(json_string)
    response = requests.put(url, data=payload, headers=headers, verify=False)
    print "EDIT RESPONDER POLICY: %s" % response.reason
 
-def CreaterespPol(connectiontype,nitroNSIP,authToken,nsresppol,token_filename,nsrespact):
+def CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname):
    url = '%s://%s/nitro/v1/config/responderpolicy' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
    buildrule = 'HTTP.REQ.URL.CONTAINS(\"well-known/acme-challenge/%s\")' % token_filename
    print buildrule
    json_string = {
    "responderpolicy": {
-       "name": nsresppol,
-       "action": nsrespact,
+       "name": polname,
+       "action": actname,
        "rule": buildrule,}
    }
    payload = json.dumps(json_string)
    response = requests.put(url, data=payload, headers=headers, verify=False)
    print "CREATE RESPONDER POLICY: %s" % response.reason
 
-def DeleterespPol(connectiontype,nitroNSIP,authToken,nsresppol):
-   url = '%s://%s/nitro/v1/config/responderpolicy/%s' % (connectiontype, nitroNSIP, nsresppol)
+def DeleterespPol(connectiontype,nitroNSIP,authToken,polname):
+   url = '%s://%s/nitro/v1/config/responderpolicy/%s' % (connectiontype, nitroNSIP, polname)
    headers = {'Cookie': authToken}
    response = requests.delete(url, headers=headers, verify=False)
    print "DELETE RESPONDER POLICY: %s" % response.reason
 
-def DeleterespAct(connectiontype,nitroNSIP,authToken,nsrespact):
-   url = '%s://%s/nitro/v1/config/responderaction/%s' % (connectiontype, nitroNSIP, nsrespact)
+def DeleterespAct(connectiontype,nitroNSIP,authToken,actname):
+   url = '%s://%s/nitro/v1/config/responderaction/%s' % (connectiontype, nitroNSIP, actname)
    headers = {'Cookie': authToken}
    response = requests.delete(url, headers=headers, verify=False)
    print "DELETE RESPONDER ACTION: %s" % response.reason
 
-def respAct(connectiontype,nitroNSIP,authToken,nsrespact,token_value):
+def respAct(connectiontype,nitroNSIP,authToken,actname,token_value):
    url = '%s://%s/nitro/v1/config/responderaction' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
    buildtarget = "\"HTTP/1.0 200 OK\" +\"\\r\\n\\r\\n\" + \"%s\"" % token_value
    print buildtarget
    json_string = {
    "responderaction": {
-       "name": nsrespact,
+       "name": actname,
        "target": buildtarget,}
    }
    payload = json.dumps(json_string)
    response = requests.put(url, data=payload, headers=headers, verify=False)
    print "EDIT RESPONDER POLICY: %s" % response.reason
 
-def CreaterespAct(connectiontype,nitroNSIP,authToken,nsrespact,token_value):
+def CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value):
    url = '%s://%s/nitro/v1/config/responderaction' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
    buildtarget = "\"HTTP/1.0 200 OK\" +\"\\r\\n\\r\\n\" + \"%s\"" % token_value
    print buildtarget
    json_string = {
    "responderaction": {
-       "name": nsrespact,
+       "name": actname,
        "type": "respondwith",
        "target": buildtarget,}
    }
@@ -137,20 +137,20 @@ def CreaterespAct(connectiontype,nitroNSIP,authToken,nsrespact,token_value):
    response = requests.post(url, data=payload, headers=headers, verify=False)
    print "CREATE RESPONDER POLICY: %s" % response.reason
 
-def BindrespPol(connectiontype,nitroNSIP,authToken,nsresppol,nsvip):
+def BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip):
    url = '%s://%s/nitro/v1/config/csvserver_responderpolicy_binding' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
    json_string = {
    "csvserver_responderpolicy_binding": {
        "name": nsvip ,
-       "policyname": nsresppol,}
+       "policyname": polname,}
    }
    payload = json.dumps(json_string)
    response = requests.put(url, data=payload, headers=headers, verify=False)
    print "BIND RESPONDER POLICY: %s" % response.reason
 
-def UnBindrespPol(connectiontype,nitroNSIP,authToken,nsresppol,nsvip):
-   url = '%s://%s/nitro/v1/config/csvserver_responderpolicy_binding/%s' % (connectiontype, nitroNSIP, nsresppol)
+def UnBindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip):
+   url = '%s://%s/nitro/v1/config/csvserver_responderpolicy_binding/%s' % (connectiontype, nitroNSIP, polname)
    headers = {'Cookie': authToken}
    response = requests.delete(url, headers=headers, verify=False)
    print "UNBIND RESPONDER POLICY: %s" % response.reason
@@ -223,7 +223,7 @@ if whattodo == "save":
 elif whattodo == "test":
    print "Connectivity To Netscaler OK"
 elif whattodo == "challenge":
-   print "Editing Challenge Policy"
+   print "Creating Challenge Policy"
    token_filename = sys.argv[2]
    token_value = sys.argv[3]
    challenge_domain = sys.argv[4]
