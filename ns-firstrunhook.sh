@@ -22,7 +22,6 @@ deploy_challenge() {
     counter_curr=$(< "$counter_file" ) 
     /root/ns-letsencrypt/ns-copytons.py challenge $TOKEN_FILENAME $TOKEN_VALUE $DOMAIN $counter_curr
     (( ++counter_curr ))
-    echo $counter_curr
     printf '%s\n' "$counter_curr" >"$counter_file"
 }
 
