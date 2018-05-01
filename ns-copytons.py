@@ -153,7 +153,7 @@ def BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount):
    print "BIND RESPONDER POLICY: %s" % response.reason
 
 def UnBindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip):
-   url = '%s://%s/nitro/v1/config/csvserver_responderpolicy_binding/%s' % (connectiontype, nitroNSIP, polname)
+   url = '%s://%s/nitro/v1/config/csvserver_responderpolicy_binding/%s?args=%s' % (connectiontype, nitroNSIP, nsvip, %polname)
    headers = {'Cookie': authToken}
    response = requests.delete(url, headers=headers, verify=False)
    print "UNBIND RESPONDER POLICY: %s" % response.reason
