@@ -94,7 +94,7 @@ def CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actn
        "rule": buildrule,}
    }
    payload = json.dumps(json_string)
-   response = requests.put(url, data=payload, headers=headers, verify=False)
+   response = requests.post(url, data=payload, headers=headers, verify=False)
    print "CREATE RESPONDER POLICY: %s" % response.reason
 
 def DeleterespPol(connectiontype,nitroNSIP,authToken,polname):
