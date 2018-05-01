@@ -145,7 +145,8 @@ def BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip):
    json_string = {
    "csvserver_responderpolicy_binding": {
        "name": nsvip,
-       "policyname": polname,}
+       "policyname": polname,
+       "priority": "10",}
    }
    payload = json.dumps(json_string)
    response = requests.put(url, data=payload, headers=headers, verify=False)
