@@ -21,7 +21,7 @@ deploy_challenge() {
     #   be found in the $TOKEN_FILENAME file.
     counter_curr=$(< "$counter_file" ) 
     /root/ns-letsencrypt/ns-copytons.py challenge $TOKEN_FILENAME $TOKEN_VALUE $DOMAIN $counter_curr
-    (( --counter_curr ))
+    (( ++counter_curr ))
     echo $counter_curr
     printf '%s\n' "$counter_curr" >"$counter_file"
 }
@@ -123,9 +123,7 @@ startup_hook() {
   # (e.g. starting a webserver).
   echo Testing Netscaler Connectivity
   /root/ns-letsencrypt/ns-copytons.py test
-  echo $domaincount
-  #export counter_file=$(mktemp "$HOME/.counter.XXXXXX")
-  printf '%s\n' "$domaincount" >"$counter_file"
+  printf '%s\n' "0" >"$counter_file"
 }
 
 exit_hook() {
