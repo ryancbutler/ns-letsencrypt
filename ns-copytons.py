@@ -3,7 +3,7 @@
 #USE AT OWN RISK
 
 #Imports
-import json, requests, base64, sys
+import json, requests, base64, sys, os
 #imports variables used for script
 from mynsconfig import *
 
@@ -138,7 +138,7 @@ def CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value):
    response = requests.post(url, data=payload, headers=headers, verify=False)
    print "CREATE RESPONDER ACTION: %s" % response.reason
 
-def BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip):
+def BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount):
    url = '%s://%s/nitro/v1/config/csvserver_responderpolicy_binding' % (connectiontype, nitroNSIP)
    print nsvip
    headers = {'Content-type': 'application/json','Cookie': authToken}
@@ -146,7 +146,7 @@ def BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip):
    "csvserver_responderpolicy_binding": {
        "name": nsvip,
        "policyname": polname,
-       "priority": "10",}
+       "priority": domaincount,}
    }
    payload = json.dumps(json_string)
    response = requests.put(url, data=payload, headers=headers, verify=False)
@@ -236,7 +236,9 @@ elif whattodo == "challenge":
    print actname
    CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value)
    CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname)
-   BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip)
+   domaincount = 10 + os.environ['domaincount']
+   print domaincount
+   BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount)
 elif whattodo == "clean":
    print "Clean Challenge Policy"
    challenge_domain = sys.argv[2]
