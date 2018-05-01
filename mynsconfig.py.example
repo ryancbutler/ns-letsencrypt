@@ -13,6 +13,10 @@ nskey = "le-privkey.pem";
 nschain = "le-chain.pem";
 nscertpath = "/nsconfig/ssl/";
 
-#Responder Policy information
+#Responder Policy prefix information
 nsrespact = "le-responder-act"
 nsresppol = "le-responder-pol"
+
+#HTTP Content switch vserver name
+nsvip = "csw-http"
+
