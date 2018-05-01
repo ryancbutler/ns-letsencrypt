@@ -140,10 +140,11 @@ def CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value):
 
 def BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip):
    url = '%s://%s/nitro/v1/config/csvserver_responderpolicy_binding' % (connectiontype, nitroNSIP)
+   print nsvip
    headers = {'Content-type': 'application/json','Cookie': authToken}
    json_string = {
    "csvserver_responderpolicy_binding": {
-       "name": nsvip ,
+       "name": nsvip,
        "policyname": polname,}
    }
    payload = json.dumps(json_string)
