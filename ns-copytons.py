@@ -130,7 +130,7 @@ def CreaterespAct(connectiontype,nitroNSIP,authToken,nsrespact,token_value):
    json_string = {
    "responderaction": {
        "name": nsrespact,
-       "type": "respondwith"
+       "type": "respondwith",
        "target": buildtarget,}
    }
    payload = json.dumps(json_string)
