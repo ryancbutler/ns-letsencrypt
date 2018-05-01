@@ -229,6 +229,8 @@ elif whattodo == "challenge":
    challenge_domain = sys.argv[4]
    polname = '%s-%s' % (nsresppol, challenge_domain)
    actname = '%s-%s' % (nsrespact, challenge_domain)
+   print polname
+   print actname
    CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value)
    CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname)
    BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip)
