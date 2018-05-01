@@ -230,7 +230,7 @@ elif whattodo == "challenge":
    polname = '%s-%s' % (nsresppol, challenge_domain)
    actname = '%s-%s' % (nsrespact, challenge_domain)
    CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value)
-   CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename)
+   CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname)
    BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip)
 elif whattodo == "clean":
    print "Clean Challenge Policy"
