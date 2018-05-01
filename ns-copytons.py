@@ -135,7 +135,7 @@ def CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value):
    }
    payload = json.dumps(json_string)
    response = requests.post(url, data=payload, headers=headers, verify=False)
-   print "CREATE RESPONDER POLICY: %s" % response.reason
+   print "CREATE RESPONDER ACTION: %s" % response.reason
 
 def BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip):
    url = '%s://%s/nitro/v1/config/csvserver_responderpolicy_binding' % (connectiontype, nitroNSIP)
