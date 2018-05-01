@@ -230,13 +230,14 @@ elif whattodo == "challenge":
    token_filename = sys.argv[2]
    token_value = sys.argv[3]
    challenge_domain = sys.argv[4]
+   domaincount = sys.argv[5]
    polname = '%s-%s' % (nsresppol, challenge_domain)
    actname = '%s-%s' % (nsrespact, challenge_domain)
    print polname
    print actname
    CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value)
    CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname)
-   domaincount = 10 + os.environ['domaincount']
+   domaincount = 10 + domaincount
    print domaincount
    BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount)
 elif whattodo == "clean":

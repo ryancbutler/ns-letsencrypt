@@ -19,8 +19,8 @@ deploy_challenge() {
     #   validation, this is what you want to put in the _acme-challenge
     #   TXT record. For HTTP validation it is the value that is expected
     #   be found in the $TOKEN_FILENAME file.
-    export domaincount=$(($domaincount+1))
     /root/ns-letsencrypt/ns-copytons.py challenge $TOKEN_FILENAME $TOKEN_VALUE $DOMAIN $domaincount
+    domaincount=$(($domaincount+1))
 }
 
 clean_challenge() {
@@ -120,7 +120,7 @@ startup_hook() {
   # (e.g. starting a webserver).
   echo Testing Netscaler Connectivity
   /root/ns-letsencrypt/ns-copytons.py test
-  export domaincount=0
+  domaincount=0
 }
 
 exit_hook() {
