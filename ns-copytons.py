@@ -71,7 +71,6 @@ def respPol(connectiontype,nitroNSIP,authToken,polname,token_filename):
    url = '%s://%s/nitro/v1/config/responderpolicy' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
    buildrule = 'HTTP.REQ.URL.CONTAINS(\"well-known/acme-challenge/%s\")' % token_filename
-   print buildrule
    json_string = {
    "responderpolicy": {
        "name": polname,
@@ -85,8 +84,6 @@ def CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actn
    url = '%s://%s/nitro/v1/config/responderpolicy' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
    buildrule = 'HTTP.REQ.URL.CONTAINS(\"well-known/acme-challenge/%s\")' % token_filename
-   print buildrule
-   print actname
    json_string = {
    "responderpolicy": {
        "name": polname,
@@ -113,7 +110,6 @@ def respAct(connectiontype,nitroNSIP,authToken,actname,token_value):
    url = '%s://%s/nitro/v1/config/responderaction' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
    buildtarget = "\"HTTP/1.0 200 OK\" +\"\\r\\n\\r\\n\" + \"%s\"" % token_value
-   print buildtarget
    json_string = {
    "responderaction": {
        "name": actname,
@@ -127,7 +123,6 @@ def CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value):
    url = '%s://%s/nitro/v1/config/responderaction' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
    buildtarget = "\"HTTP/1.0 200 OK\" +\"\\r\\n\\r\\n\" + \"%s\"" % token_value
-   print buildtarget
    json_string = {
    "responderaction": {
        "name": actname,
@@ -140,7 +135,6 @@ def CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value):
 
 def BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount):
    url = '%s://%s/nitro/v1/config/csvserver_responderpolicy_binding' % (connectiontype, nitroNSIP)
-   print nsvip
    headers = {'Content-type': 'application/json','Cookie': authToken}
    json_string = {
    "csvserver_responderpolicy_binding": {
@@ -154,8 +148,6 @@ def BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount):
 
 def UnBindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip):
    url = '%s://%s/nitro/v1/config/csvserver_responderpolicy_binding/%s?args=policyname:%s' % (connectiontype, nitroNSIP, nsvip, polname)
-   print nsvip
-   print polname
    headers = {'Cookie': authToken}
    response = requests.delete(url, headers=headers, verify=False)
    print "UNBIND RESPONDER POLICY: %s" % response.reason
@@ -235,8 +227,6 @@ elif whattodo == "challenge":
    domaincount = int(sys.argv[5])
    polname = '%s-%s' % (nsresppol, challenge_domain)
    actname = '%s-%s' % (nsrespact, challenge_domain)
-   print polname
-   print actname
    CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value)
    CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname)
    domaincount = 10 + domaincount

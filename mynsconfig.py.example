@@ -13,7 +13,7 @@ nskey = "le-privkey.pem";
 nschain = "le-chain.pem";
 nscertpath = "/nsconfig/ssl/";
 
-#Responder Policy prefix information
+#Responder Policy prefix information for temporary policy
 nsrespact = "le-responder-act"
 nsresppol = "le-responder-pol"
 
