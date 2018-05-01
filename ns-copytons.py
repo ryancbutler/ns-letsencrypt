@@ -220,23 +220,22 @@ if whattodo == "save":
 elif whattodo == "test":
    print "Connectivity To Netscaler OK"
 elif whattodo == "challenge":
-   print "Creating Challenge Policy"
    token_filename = sys.argv[2]
    token_value = sys.argv[3]
    challenge_domain = sys.argv[4]
    domaincount = int(sys.argv[5])
    polname = '%s-%s' % (nsresppol, challenge_domain)
    actname = '%s-%s' % (nsrespact, challenge_domain)
+   print "Creating Challenge Policy for %s" % challenge_domain
    CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value)
    CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname)
    domaincount = 10 + domaincount
-   print domaincount
    BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount)
 elif whattodo == "clean":
-   print "Clean Challenge Policy"
    challenge_domain = sys.argv[2]
    polname = '%s-%s' % (nsresppol, challenge_domain)
    actname = '%s-%s' % (nsrespact, challenge_domain)
+   print "Removing Challenge Policy for %s" % challenge_domain"
    UnBindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip)
    DeleterespPol(connectiontype,nitroNSIP,authToken,polname)
    DeleterespAct(connectiontype,nitroNSIP,authToken,actname)
