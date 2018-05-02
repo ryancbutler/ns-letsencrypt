@@ -123,6 +123,11 @@ startup_hook() {
   # (e.g. starting a webserver).
   echo Testing Netscaler Connectivity
   /root/ns-letsencrypt/ns-copytons.py test
+  ret=$?
+  if [ $ret -ne 0 ]; then
+     echo "Can't connect to Netscaler"
+     exit 
+  fi
   printf '%s\n' "0" >"$counter_file"
 }
 

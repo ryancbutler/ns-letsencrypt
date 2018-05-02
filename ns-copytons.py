@@ -29,10 +29,11 @@ def getAuthCookie(connectiontype,nitroNSIP,nitroUser,nitroPass):
    response.raise_for_status()
    cookie = response.cookies['NITRO_AUTH_TOKEN']
    nitroCookie = 'NITRO_AUTH_TOKEN=%s' % cookie
-   if cookie is None:
-       sys.exit("Can't connect to Netscaler.  Check config")   
+   if response.status_code == "200":
+       return nitroCookie 
    else:
-       return nitroCookie
+       print "Can't connect to Netscaler.  Check config"
+       os.exit()
        
 
 def logOut(connectiontype,nitroNSIP,authToken):
@@ -252,7 +253,8 @@ elif whattodo == "challenge":
    elif viptype == "lb":
        BindrespPolLB(connectiontype,nitroNSIP,authToken,polname,nsvip)  
    else:
-       sys.exit("Invalid VIP Type.  Check config")
+       print "Invalid VIP Type.  Check config"
+       os.exit()
   
 elif whattodo == "clean":
    challenge_domain = sys.argv[2]
