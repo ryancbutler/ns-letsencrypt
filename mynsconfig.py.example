@@ -13,6 +13,14 @@ nskey = "le-privkey.pem";
 nschain = "le-chain.pem";
 nscertpath = "/nsconfig/ssl/";
 
-#Responder Policy information
+#Responder Policy prefix information for temporary policy
 nsrespact = "le-responder-act"
 nsresppol = "le-responder-pol"
+#Number to start creating policy priorities.  Each domain challenged will increase by one.
+polpristart = 10
+
+#HTTP Content switch or LB vserver name
+nsvip = "csw-http"
+#VIP type (csw or LB)
+viptype = "csw" 
+

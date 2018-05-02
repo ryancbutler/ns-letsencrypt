@@ -19,7 +19,16 @@ deploy_challenge() {
     #   validation, this is what you want to put in the _acme-challenge
     #   TXT record. For HTTP validation it is the value that is expected
     #   be found in the $TOKEN_FILENAME file.
-    /root/ns-letsencrypt/ns-copytons.py challenge $TOKEN_FILENAME $TOKEN_VALUE
+    counter_curr=$(< "$counter_file" )
+    connect=$(< "$connect_file" )
+    if [ $connect == "1" ]
+    then
+      /root/ns-letsencrypt/ns-copytons.py challenge $TOKEN_FILENAME $TOKEN_VALUE $DOMAIN $counter_curr
+      (( ++counter_curr ))
+      printf '%s\n' "$counter_curr" >"$counter_file"
+    else
+      echo "Can't connect.  Skipping challenge"
+    fi
 }
 
 clean_challenge() {
@@ -30,6 +39,13 @@ clean_challenge() {
     # files or DNS records that are no longer needed.
     #
     # The parameters are the same as for deploy_challenge.
+    connect=$(< "$connect_file" )
+    if [ $connect == "1" ]
+    then
+	  /root/ns-letsencrypt/ns-copytons.py clean $DOMAIN
+	else
+      echo "Can't connect.  Skipping clean"
+    fi
 }
 
 deploy_cert() {
@@ -53,7 +69,13 @@ deploy_cert() {
     #   The path of the file containing the intermediate certificate(s).
     # - TIMESTAMP
     #   Timestamp when the specified certificate was created.
-    /root/ns-letsencrypt/ns-copytons.py save $CERTFILE
+    connect=$(< "$connect_file" )
+	if [ $connect == "1" ]
+    then 
+	  /root/ns-letsencrypt/ns-copytons.py save $CERTFILE $KEYFILE $CHAINFILE
+	else
+      echo "Can't connect.  Skipping deploy"
+    fi
 }
 
 unchanged_cert() {
@@ -111,7 +133,8 @@ exit_hook() {
   # This hook is called at the end of the cron command and can be used to
   # do some final (cleanup or other) tasks.
 
-  :
+  rm -rf /root/ns-letsencrypt/.connect*
+  rm -rf /root/ns-letsencrypt/.counter*
 }
 
 startup_hook() {
@@ -119,6 +142,14 @@ startup_hook() {
   # (e.g. starting a webserver).
   echo Testing Netscaler Connectivity
   /root/ns-letsencrypt/ns-copytons.py test
+  ret=$?
+  if [ $ret -ne 0 ]
+  then
+     echo "Problems connecting to Netscaler"
+  else
+     printf '%s\n' "1" >"$connect_file"
+     printf '%s\n' "0" >"$counter_file"
+  fi
 }
 
 HANDLER="$1"; shift
