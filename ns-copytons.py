@@ -9,7 +9,7 @@ from mynsconfig import *
 
 __author__ = "Ryan Butler (techdrabble.com)"
 __license__ = "GPL"
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 __maintainer__ = "Ryan Butler"
 
 #what to perform
@@ -67,19 +67,6 @@ def sendFile(connectiontype,nitroNSIP,authToken,nscert,localcert,nscertpath):
    response = requests.post(url, data=payload, headers=headers, verify=False)
    print "CREATE CERT: %s" % response.reason
 
-def respPol(connectiontype,nitroNSIP,authToken,polname,token_filename):
-   url = '%s://%s/nitro/v1/config/responderpolicy' % (connectiontype, nitroNSIP)
-   headers = {'Content-type': 'application/json','Cookie': authToken}
-   buildrule = 'HTTP.REQ.URL.CONTAINS(\"well-known/acme-challenge/%s\")' % token_filename
-   json_string = {
-   "responderpolicy": {
-       "name": polname,
-       "rule": buildrule,}
-   }
-   payload = json.dumps(json_string)
-   response = requests.put(url, data=payload, headers=headers, verify=False)
-   print "EDIT RESPONDER POLICY: %s" % response.reason
-
 def CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname):
    url = '%s://%s/nitro/v1/config/responderpolicy' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
@@ -106,19 +93,6 @@ def DeleterespAct(connectiontype,nitroNSIP,authToken,actname):
    response = requests.delete(url, headers=headers, verify=False)
    print "DELETE RESPONDER ACTION: %s" % response.reason
 
-def respAct(connectiontype,nitroNSIP,authToken,actname,token_value):
-   url = '%s://%s/nitro/v1/config/responderaction' % (connectiontype, nitroNSIP)
-   headers = {'Content-type': 'application/json','Cookie': authToken}
-   buildtarget = "\"HTTP/1.0 200 OK\" +\"\\r\\n\\r\\n\" + \"%s\"" % token_value
-   json_string = {
-   "responderaction": {
-       "name": actname,
-       "target": buildtarget,}
-   }
-   payload = json.dumps(json_string)
-   response = requests.put(url, data=payload, headers=headers, verify=False)
-   print "EDIT RESPONDER POLICY: %s" % response.reason
-
 def CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value):
    url = '%s://%s/nitro/v1/config/responderaction' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
@@ -133,7 +107,7 @@ def CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value):
    response = requests.post(url, data=payload, headers=headers, verify=False)
    print "CREATE RESPONDER ACTION: %s" % response.reason
 
-def BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount):
+def BindrespPolCSW(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount):
    url = '%s://%s/nitro/v1/config/csvserver_responderpolicy_binding' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
    json_string = {
@@ -146,8 +120,27 @@ def BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount):
    response = requests.put(url, data=payload, headers=headers, verify=False)
    print "BIND RESPONDER POLICY: %s" % response.reason
 
-def UnBindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip):
+def BindrespPolLB(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount):
+   url = '%s://%s/nitro/v1/config/csvserver_lbvserver_binding' % (connectiontype, nitroNSIP)
+   headers = {'Content-type': 'application/json','Cookie': authToken}
+   json_string = {
+   "csvserver_lbvserver_binding": {
+       "name": nsvip,
+       "policyname": polname,
+       "priority": domaincount,}
+   }
+   payload = json.dumps(json_string)
+   response = requests.put(url, data=payload, headers=headers, verify=False)
+   print "BIND RESPONDER POLICY: %s" % response.reason
+
+def UnBindrespPolCSW(connectiontype,nitroNSIP,authToken,polname,nsvip):
    url = '%s://%s/nitro/v1/config/csvserver_responderpolicy_binding/%s?args=policyname:%s' % (connectiontype, nitroNSIP, nsvip, polname)
+   headers = {'Cookie': authToken}
+   response = requests.delete(url, headers=headers, verify=False)
+   print "UNBIND RESPONDER POLICY: %s" % response.reason
+
+def UnBindrespPolLB(connectiontype,nitroNSIP,authToken,polname,nsvip):
+   url = '%s://%s/nitro/v1/config/csvserver_lbvserver_binding/%s?args=policyname:%s' % (connectiontype, nitroNSIP, nsvip, polname)
    headers = {'Cookie': authToken}
    response = requests.delete(url, headers=headers, verify=False)
    print "UNBIND RESPONDER POLICY: %s" % response.reason
@@ -229,14 +222,24 @@ elif whattodo == "challenge":
    print "Creating Challenge Policy for %s" % challenge_domain
    CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value)
    CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname)
-   domaincount = 10 + domaincount
-   BindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount)
+   domaincount = polpristart + domaincount
+   if viptype == "csw":
+       BindrespPolCSW(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount)
+   elif viptype == "lb":
+       BindrespPolLB(connectiontype,nitroNSIP,authToken,polname,nsvip)  
+   else:
+       sys.exit("Invalid VIP Type.  Check config")    
 elif whattodo == "clean":
    challenge_domain = sys.argv[2]
    polname = '%s-%s' % (nsresppol, challenge_domain)
    actname = '%s-%s' % (nsrespact, challenge_domain)
    print "Removing Challenge Policy for %s" % challenge_domain"
-   UnBindrespPol(connectiontype,nitroNSIP,authToken,polname,nsvip)
+   if viptype == "csw":
+       UnBindrespPolCSW(connectiontype,nitroNSIP,authToken,polname,nsvip)
+   elif viptype == "lb":
+       UnBindrespPolLB(connectiontype,nitroNSIP,authToken,polname,nsvip)  
+   else:
+       sys.exit("Invalid VIP Type.  Check config")  
    DeleterespPol(connectiontype,nitroNSIP,authToken,polname)
    DeleterespAct(connectiontype,nitroNSIP,authToken,actname)
 elif whattodo == "create":
