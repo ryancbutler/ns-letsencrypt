@@ -29,7 +29,11 @@ def getAuthCookie(connectiontype,nitroNSIP,nitroUser,nitroPass):
    response.raise_for_status()
    cookie = response.cookies['NITRO_AUTH_TOKEN']
    nitroCookie = 'NITRO_AUTH_TOKEN=%s' % cookie
-   return nitroCookie
+   if cookie is None:
+       sys.exit("Can't connect to Netscaler.  Check config")   
+   else:
+       return nitroCookie
+       
 
 def logOut(connectiontype,nitroNSIP,authToken):
    url = '%s://%s/nitro/v1/config/logout' % (connectiontype, nitroNSIP)
@@ -229,6 +233,7 @@ if whattodo == "save":
        linkSSL(connectiontype,nitroNSIP,authToken, nschainname, nspairname)
    SaveNSConfig(connectiontype,nitroNSIP,authToken)
 elif whattodo == "test":
+   logOut(connectiontype,nitroNSIP,authToken)
    print "Connectivity To Netscaler OK"
 elif whattodo == "challenge":
    token_filename = sys.argv[2]
