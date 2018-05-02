@@ -4,6 +4,7 @@
 
 #Imports
 import json, requests, base64, sys, os
+requests.packages.urllib3.disable_warnings()
 #imports variables used for script
 from mynsconfig import *
 
@@ -27,8 +28,7 @@ def getAuthCookie(connectiontype,nitroNSIP,nitroUser,nitroPass):
    payload = json.dumps(json_string)
    try:
      response = requests.post(url, data=payload, headers=headers, verify=False, timeout=1.0)
-     response.raise_for_status()
-      
+     response.raise_for_status()      
    except requests.exceptions.RequestException as e:
      print e
      sys.exit(1)
