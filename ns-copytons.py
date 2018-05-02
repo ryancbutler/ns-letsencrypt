@@ -27,12 +27,19 @@ def getAuthCookie(connectiontype,nitroNSIP,nitroUser,nitroPass):
    payload = json.dumps(json_string)
    try:
      response = requests.post(url, data=payload, headers=headers, verify=False, timeout=1.0)
+     response.raise_for_status()
+      
    except requests.exceptions.RequestException as e:
+     print e
      sys.exit(1)
+   except requests.exceptions.HTTPError as err:
+     print err
+     sys.exit(1)
+    
    cookie = response.cookies['NITRO_AUTH_TOKEN']
    nitroCookie = 'NITRO_AUTH_TOKEN=%s' % cookie
    return nitroCookie 
-
+   
 def logOut(connectiontype,nitroNSIP,authToken):
    url = '%s://%s/nitro/v1/config/logout' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/vnd.com.citrix.netscaler.logout+json','Cookie': authToken}
