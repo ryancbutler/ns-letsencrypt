@@ -253,7 +253,7 @@ elif whattodo == "clean":
    challenge_domain = sys.argv[2]
    polname = '%s-%s' % (nsresppol, challenge_domain)
    actname = '%s-%s' % (nsrespact, challenge_domain)
-   print "Removing Challenge Policy for %s" % challenge_domain"
+   print "Removing Challenge Policy for %s" % challenge_domain
    if viptype == "csw":
        UnBindrespPolCSW(connectiontype,nitroNSIP,authToken,polname,nsvip)
    elif viptype == "lb":
