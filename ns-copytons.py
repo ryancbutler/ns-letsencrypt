@@ -178,6 +178,13 @@ def createSSL(connectiontype,nitroNSIP,authToken, nscert, nspairname, nskey):
    response = requests.post(url, data=payload, headers=headers, verify=False)
    print "Create Netscaler CERT: %s" % response.reason
 
+def GetSSL(connectiontype,nitroNSIP,authToken, nspairname):
+   url = '%s://%s/nitro/v1/config/sslcertkey/%s' % (connectiontype, nitroNSIP, nspairname)
+   headers = {'Cookie': authToken}
+   response = requests.get(url,headers=headers, verify=False)
+   print "Get Netscaler CERT: %s" % response.reason
+   return response.status_code
+
 def createSSLCA(connectiontype,nitroNSIP,authToken,nscert,nspairname):
    url = '%s://%s/nitro/v1/config/sslcertkey' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
@@ -205,10 +212,21 @@ def linkSSL(connectiontype,nitroNSIP,authToken, nschainname, nspairname):
 authToken = getAuthCookie(connectiontype,nitroNSIP,nitroUser,nitroPass)
 if whattodo == "save":
    localcert = sys.argv[2]
-   print "Updating Netscaler Certificate"
-   removeFile(connectiontype,nitroNSIP,authToken,nscert,nscertpath)
-   sendFile(connectiontype,nitroNSIP,authToken,nscert,localcert,nscertpath)
-   updateSSL(connectiontype,nitroNSIP,authToken, nscert, nspairname)
+   localkey = sys.argv[3]
+   localchain = sys.argv[4]
+   if (GetSSL(connectiontype,nitroNSIP,authToken, nspairname)) == "200":
+       print "Using existing cert"
+       removeFile(connectiontype,nitroNSIP,authToken,nscert,nscertpath)
+       sendFile(connectiontype,nitroNSIP,authToken,nscert,localcert,nscertpath)
+       updateSSL(connectiontype,nitroNSIP,authToken, nscert, nspairname)
+   else:
+       print "Creating Netscaler Certificate"
+       sendFile(connectiontype,nitroNSIP,authToken,nscert,localcert,nscertpath)
+       sendFile(connectiontype,nitroNSIP,authToken,nskey,localkey,nscertpath)
+       sendFile(connectiontype,nitroNSIP,authToken,nschain,localchain,nscertpath)
+       createSSL(connectiontype,nitroNSIP,authToken, nscert, nspairname, nskey)
+       createSSLCA(connectiontype,nitroNSIP,authToken, nschain, nschainname)
+       linkSSL(connectiontype,nitroNSIP,authToken, nschainname, nspairname)
    SaveNSConfig(connectiontype,nitroNSIP,authToken)
 elif whattodo == "test":
    print "Connectivity To Netscaler OK"
@@ -223,12 +241,14 @@ elif whattodo == "challenge":
    CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value)
    CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname)
    domaincount = polpristart + domaincount
+   
    if viptype == "csw":
        BindrespPolCSW(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount)
    elif viptype == "lb":
        BindrespPolLB(connectiontype,nitroNSIP,authToken,polname,nsvip)  
    else:
-       sys.exit("Invalid VIP Type.  Check config")    
+       sys.exit("Invalid VIP Type.  Check config")
+  
 elif whattodo == "clean":
    challenge_domain = sys.argv[2]
    polname = '%s-%s' % (nsresppol, challenge_domain)
@@ -242,16 +262,5 @@ elif whattodo == "clean":
        sys.exit("Invalid VIP Type.  Check config")  
    DeleterespPol(connectiontype,nitroNSIP,authToken,polname)
    DeleterespAct(connectiontype,nitroNSIP,authToken,actname)
-elif whattodo == "create":
-   localcert = sys.argv[2]
-   localkey = sys.argv[3]
-   localchain = sys.argv[4]
-   print "Create Netscaler Certificate"
-   sendFile(connectiontype,nitroNSIP,authToken,nscert,localcert,nscertpath)
-   sendFile(connectiontype,nitroNSIP,authToken,nskey,localkey,nscertpath)
-   sendFile(connectiontype,nitroNSIP,authToken,nschain,localchain,nscertpath)
-   createSSL(connectiontype,nitroNSIP,authToken, nscert, nspairname, nskey)
-   createSSLCA(connectiontype,nitroNSIP,authToken, nschain, nschainname)
-   linkSSL(connectiontype,nitroNSIP,authToken, nschainname, nspairname)
-   SaveNSConfig(connectiontype,nitroNSIP,authToken)
+   
 logOut(connectiontype,nitroNSIP,authToken)

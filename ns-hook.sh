@@ -57,7 +57,7 @@ deploy_cert() {
     #   The path of the file containing the intermediate certificate(s).
     # - TIMESTAMP
     #   Timestamp when the specified certificate was created.
-    /root/ns-letsencrypt/ns-copytons.py save $CERTFILE
+    /root/ns-letsencrypt/ns-copytons.py save $CERTFILE $KEYFILE $CHAINFILE
 }
 
 unchanged_cert() {
