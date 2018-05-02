@@ -25,16 +25,13 @@ def getAuthCookie(connectiontype,nitroNSIP,nitroUser,nitroPass):
        }
    }
    payload = json.dumps(json_string)
-   response = requests.post(url, data=payload, headers=headers, verify=False)
-   response.raise_for_status()
+   try:
+     response = requests.post(url, data=payload, headers=headers, verify=False, timeout=1.0)
+   except requests.exceptions.RequestException as e:
+     sys.exit(1)
    cookie = response.cookies['NITRO_AUTH_TOKEN']
    nitroCookie = 'NITRO_AUTH_TOKEN=%s' % cookie
-   if response.status_code == "200":
-       return nitroCookie 
-   else:
-       print "Can't connect to Netscaler.  Check config"
-       os.exit()
-       
+   return nitroCookie 
 
 def logOut(connectiontype,nitroNSIP,authToken):
    url = '%s://%s/nitro/v1/config/logout' % (connectiontype, nitroNSIP)
@@ -70,7 +67,7 @@ def sendFile(connectiontype,nitroNSIP,authToken,nscert,localcert,nscertpath):
    }
    payload = json.dumps(json_string)
    response = requests.post(url, data=payload, headers=headers, verify=False)
-   print "CREATE CERT: %s" % response.reason
+   print "CREATING %s: %s" % (nscert, response.reason)
 
 def CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname):
    url = '%s://%s/nitro/v1/config/responderpolicy' % (connectiontype, nitroNSIP)
@@ -187,7 +184,6 @@ def GetSSL(connectiontype,nitroNSIP,authToken, nspairname):
    url = '%s://%s/nitro/v1/config/sslcertkey/%s' % (connectiontype, nitroNSIP, nspairname)
    headers = {'Cookie': authToken}
    response = requests.get(url,headers=headers, verify=False)
-   print "Get Netscaler CERT: %s" % response.reason
    return response.status_code
 
 def createSSLCA(connectiontype,nitroNSIP,authToken,nscert,nspairname):
@@ -219,7 +215,8 @@ if whattodo == "save":
    localcert = sys.argv[2]
    localkey = sys.argv[3]
    localchain = sys.argv[4]
-   if (GetSSL(connectiontype,nitroNSIP,authToken, nspairname)) == "200":
+   existcode = GetSSL(connectiontype,nitroNSIP,authToken, nspairname)
+   if existcode == 200:
        print "Using existing cert"
        removeFile(connectiontype,nitroNSIP,authToken,nscert,nscertpath)
        sendFile(connectiontype,nitroNSIP,authToken,nscert,localcert,nscertpath)
@@ -234,7 +231,6 @@ if whattodo == "save":
        linkSSL(connectiontype,nitroNSIP,authToken, nschainname, nspairname)
    SaveNSConfig(connectiontype,nitroNSIP,authToken)
 elif whattodo == "test":
-   logOut(connectiontype,nitroNSIP,authToken)
    print "Connectivity To Netscaler OK"
 elif whattodo == "challenge":
    token_filename = sys.argv[2]
