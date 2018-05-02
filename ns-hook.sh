@@ -19,10 +19,16 @@ deploy_challenge() {
     #   validation, this is what you want to put in the _acme-challenge
     #   TXT record. For HTTP validation it is the value that is expected
     #   be found in the $TOKEN_FILENAME file.
-    counter_curr=$(< "$counter_file" ) 
-    /root/ns-letsencrypt/ns-copytons.py challenge $TOKEN_FILENAME $TOKEN_VALUE $DOMAIN $counter_curr
-    (( ++counter_curr ))
-    printf '%s\n' "$counter_curr" >"$counter_file"
+    counter_curr=$(< "$counter_file" )
+    connect=$(< "$connect_file" )
+    if [ $connect == "1"]
+    then
+      /root/ns-letsencrypt/ns-copytons.py challenge $TOKEN_FILENAME $TOKEN_VALUE $DOMAIN $counter_curr
+      (( ++counter_curr ))
+      printf '%s\n' "$counter_curr" >"$counter_file"
+    else
+      echo "Can't connect.  Skipping challenge"
+    fi
 }
 
 clean_challenge() {
@@ -123,11 +129,7 @@ startup_hook() {
   # (e.g. starting a webserver).
   echo Testing Netscaler Connectivity
   /root/ns-letsencrypt/ns-copytons.py test
-  ret=$?
-  if [ $ret -ne 0 ]; then
-     echo "Can't connect to Netscaler"
-     exit 
-  fi
+  printf '%s\n' "1" >"$connect_file"
   printf '%s\n' "0" >"$counter_file"
 }
 
