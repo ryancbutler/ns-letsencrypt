@@ -1,1 +1,10 @@
-domain1.mydomain.com domain2.mydomain.com domain3.mydomain.com
+example.org
+#example.org without any alternative names
+
+example.com www.example.com
+#example.com with an alternative name of www.example.com
+
+example.net www.example.net wiki.example.net
+#example.net with the alternative names: www.example.net and wiki.example.net
+
+##REMOVE ALL COMMENTS

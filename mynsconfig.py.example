@@ -5,15 +5,18 @@ nitroPass = "nsroot"
 #Use HTTP or HTTPs to connect to Netscaler
 connectiontype = "https"
 
-#Certificate and private key file names on Netscaler	
-nspairname = "le-certificate";
-nschainname = "le-chain";
-nscert = "le-cert.pem";
-nskey = "le-privkey.pem";
-nschain = "le-chain.pem";
-nscertpath = "/nsconfig/ssl/";
+#Certificate and private key file names on Netscaler
+#Pair Name Prefix (le-certificate-mydomain)
+nspairname = "le-certificate"
+#File Name Prefix (le-cert-myhostname.domain.com.pem)
+nscert = "le-cert"
+nskey = "le-privkey"
+#CA name and filename
+nschainname = "le-chain"
+nschain = "le-chain.pem"
+nscertpath = "/nsconfig/ssl/"
 
-#Responder Policy prefix information for temporary policy
+#Responder Policy prefix information for temporary policy (le-responder-act-mydomain.domain.com)
 nsrespact = "le-responder-act"
 nsresppol = "le-responder-pol"
 #Number to start creating policy priorities.  Each domain challenged will increase by one.
@@ -22,5 +25,4 @@ polpristart = 10
 #HTTP Content switch or LB vserver name
 nsvip = "csw-http"
 #VIP type (csw or LB)
-viptype = "csw" 
-
+viptype = "csw"

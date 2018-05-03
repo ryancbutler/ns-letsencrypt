@@ -3,14 +3,14 @@
 #USE AT OWN RISK
 
 #Imports
-import json, requests, base64, sys, os
+import json, requests, base64, sys, os, re
 requests.packages.urllib3.disable_warnings()
 #imports variables used for script
 from mynsconfig import *
 
 __author__ = "Ryan Butler (techdrabble.com)"
 __license__ = "GPL"
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 __maintainer__ = "Ryan Butler"
 
 #what to perform
@@ -222,6 +222,11 @@ if whattodo == "save":
    localcert = sys.argv[2]
    localkey = sys.argv[3]
    localchain = sys.argv[4]
+   domain = sys.argv[5]
+   m = re.search('(.+?)(?=\.)', domain)
+   nspairname = '%s-%s' % (nspairname, m.group(0))
+   nscert = '%s-%s.pem' % (nscert, domain)
+   nskey = '%s-%s.pem' % (nskey, domain)
    existcode = GetSSL(connectiontype,nitroNSIP,authToken, nspairname)
    if existcode == 200:
        print "Using existing cert"
@@ -232,11 +237,15 @@ if whattodo == "save":
        print "Creating Netscaler Certificate"
        sendFile(connectiontype,nitroNSIP,authToken,nscert,localcert,nscertpath)
        sendFile(connectiontype,nitroNSIP,authToken,nskey,localkey,nscertpath)
-       sendFile(connectiontype,nitroNSIP,authToken,nschain,localchain,nscertpath)
        createSSL(connectiontype,nitroNSIP,authToken, nscert, nspairname, nskey)
-       createSSLCA(connectiontype,nitroNSIP,authToken, nschain, nschainname)
+       existchaincode = GetSSL(connectiontype,nitroNSIP,authToken, nschainname)
+       if existchaincode == 200:
+           print "Using existing CA"
+       else:
+           print "Creating CA"
+           sendFile(connectiontype,nitroNSIP,authToken,nschain,localchain,nscertpath)
+           createSSLCA(connectiontype,nitroNSIP,authToken, nschain, nschainname)
        linkSSL(connectiontype,nitroNSIP,authToken, nschainname, nspairname)
-   SaveNSConfig(connectiontype,nitroNSIP,authToken)
 elif whattodo == "test":
    print "Connectivity To Netscaler OK"
 elif whattodo == "challenge":
@@ -272,5 +281,8 @@ elif whattodo == "clean":
        sys.exit("Invalid VIP Type.  Check config")  
    DeleterespPol(connectiontype,nitroNSIP,authToken,polname)
    DeleterespAct(connectiontype,nitroNSIP,authToken,actname)
+elif whattodo == "saveconfig":
+    print "Saving Netscaler Configuration"
+    SaveNSConfig(connectiontype,nitroNSIP,authToken)
    
 logOut(connectiontype,nitroNSIP,authToken)

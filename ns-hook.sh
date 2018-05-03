@@ -72,7 +72,7 @@ deploy_cert() {
     connect=$(< "$connect_file" )
 	if [ $connect == "1" ]
     then 
-	  /root/ns-letsencrypt/ns-copytons.py save $CERTFILE $KEYFILE $CHAINFILE
+	  /root/ns-letsencrypt/ns-copytons.py save $CERTFILE $KEYFILE $CHAINFILE $DOMAIN
 	else
       echo "Can't connect.  Skipping deploy"
     fi
@@ -132,7 +132,7 @@ request_failure() {
 exit_hook() {
   # This hook is called at the end of the cron command and can be used to
   # do some final (cleanup or other) tasks.
-
+  /root/ns-letsencrypt/ns-copytons.py saveconfig
   rm -rf /root/ns-letsencrypt/.connect*
   rm -rf /root/ns-letsencrypt/.counter*
 }
