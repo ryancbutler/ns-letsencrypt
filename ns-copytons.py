@@ -130,10 +130,10 @@ def BindrespPolCSW(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount)
    print "BIND RESPONDER POLICY: %s" % response.reason
 
 def BindrespPolLB(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount):
-   url = '%s://%s/nitro/v1/config/csvserver_lbvserver_binding' % (connectiontype, nitroNSIP)
+   url = '%s://%s/nitro/v1/config/lbvserver_responderpolicy_binding' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
    json_string = {
-   "csvserver_lbvserver_binding": {
+   "lbvserver_responderpolicy_binding": {
        "name": nsvip,
        "policyname": polname,
        "priority": domaincount,}
@@ -149,7 +149,7 @@ def UnBindrespPolCSW(connectiontype,nitroNSIP,authToken,polname,nsvip):
    print "UNBIND RESPONDER POLICY: %s" % response.reason
 
 def UnBindrespPolLB(connectiontype,nitroNSIP,authToken,polname,nsvip):
-   url = '%s://%s/nitro/v1/config/csvserver_lbvserver_binding/%s?args=policyname:%s' % (connectiontype, nitroNSIP, nsvip, polname)
+   url = '%s://%s/nitro/v1/config/lbvserver_responderpolicy_binding/%s?args=policyname:%s' % (connectiontype, nitroNSIP, nsvip, polname)
    headers = {'Cookie': authToken}
    response = requests.delete(url, headers=headers, verify=False)
    print "UNBIND RESPONDER POLICY: %s" % response.reason
