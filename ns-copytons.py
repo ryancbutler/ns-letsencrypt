@@ -254,7 +254,7 @@ elif whattodo == "challenge":
    if viptype == "csw":
        BindrespPolCSW(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount)
    elif viptype == "lb":
-       BindrespPolLB(connectiontype,nitroNSIP,authToken,polname,nsvip)  
+       BindrespPolLB(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount)  
    else:
        print "Invalid VIP Type.  Check config"
        os.exit()
