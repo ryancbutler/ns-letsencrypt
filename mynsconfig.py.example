@@ -7,7 +7,7 @@ connectiontype = "https"
 
 #Certificate and private key file names on Netscaler
 #Pair Name Prefix (le-certificate-mydomain)
-nspairname = "le-certificate"
+nspairname = "le-cert"
 #File Name Prefix (le-cert-myhostname.domain.com.pem)
 nscert = "le-cert"
 nskey = "le-privkey"

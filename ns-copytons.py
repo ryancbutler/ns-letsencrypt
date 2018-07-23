@@ -225,8 +225,8 @@ if whattodo == "save":
    domain = sys.argv[5]
    m = re.search("(.+?)(?=\.)", domain)
    nspairname = '%s-%s' % (nspairname, m.group(0))
-   nscert = nscert + "-" + domain[:15] + ".pem"
-   nskey = nskey + "-" + domain + ".pem"
+   nscert = nscert + "-" + m.group(0) + ".pem"
+   nskey = nskey + "-" + m.group(0) + ".key"
    existcode = GetSSL(connectiontype,nitroNSIP,authToken, nspairname)
    if existcode == 200:
        print "Using existing cert"
