@@ -28,18 +28,18 @@ def getAuthCookie(connectiontype,nitroNSIP,nitroUser,nitroPass):
    payload = json.dumps(json_string)
    try:
      response = requests.post(url, data=payload, headers=headers, verify=False, timeout=1.0)
-     response.raise_for_status()      
+     response.raise_for_status()
    except requests.exceptions.RequestException as e:
      print e
      sys.exit(1)
    except requests.exceptions.HTTPError as err:
      print err
      sys.exit(1)
-    
+
    cookie = response.cookies['NITRO_AUTH_TOKEN']
    nitroCookie = 'NITRO_AUTH_TOKEN=%s' % cookie
-   return nitroCookie 
-   
+   return nitroCookie
+
 def logOut(connectiontype,nitroNSIP,authToken):
    url = '%s://%s/nitro/v1/config/logout' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/vnd.com.citrix.netscaler.logout+json','Cookie': authToken}
@@ -49,7 +49,7 @@ def logOut(connectiontype,nitroNSIP,authToken):
    payload = json.dumps(json_string)
    response = requests.post(url, data=payload, headers=headers, verify=False)
    print "LOGOUT: %s" % response.reason
-   
+
 def SaveNSConfig(connectiontype,nitroNSIP,authToken):
    url = '%s://%s/nitro/v1/config/nsconfig?action=save' % (connectiontype, nitroNSIP)
    headers = {'Content-type': 'application/json','Cookie': authToken}
@@ -75,6 +75,7 @@ def sendFile(connectiontype,nitroNSIP,authToken,nscert,localcert,nscertpath):
    payload = json.dumps(json_string)
    response = requests.post(url, data=payload, headers=headers, verify=False)
    print "CREATING %s: %s" % (nscert, response.reason)
+   print response.text
 
 def CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname):
    url = '%s://%s/nitro/v1/config/responderpolicy' % (connectiontype, nitroNSIP)
@@ -173,6 +174,7 @@ def updateSSL(connectiontype,nitroNSIP,authToken, nscert, nspairname):
    payload = json.dumps(json_string)
    response = requests.post(url, data=payload, headers=headers, verify=False)
    print "Update Netscaler CERT: %s" % response.reason
+   print response.text
 
 def createSSL(connectiontype,nitroNSIP,authToken, nscert, nspairname, nskey):
    url = '%s://%s/nitro/v1/config/sslcertkey' % (connectiontype, nitroNSIP)
@@ -181,11 +183,15 @@ def createSSL(connectiontype,nitroNSIP,authToken, nscert, nspairname, nskey):
    "sslcertkey": {
        "certkey": nspairname,
        "cert": nscert,
-       "key": nskey,}
+       "key": nskey,
+       "passplain": passplain,
+       "password": True,}
    }
    payload = json.dumps(json_string)
    response = requests.post(url, data=payload, headers=headers, verify=False)
    print "Create Netscaler CERT: %s" % response.reason
+   print nspairname
+   print response.text
 
 def GetSSL(connectiontype,nitroNSIP,authToken, nspairname):
    url = '%s://%s/nitro/v1/config/sslcertkey/%s' % (connectiontype, nitroNSIP, nspairname)
@@ -204,6 +210,7 @@ def createSSLCA(connectiontype,nitroNSIP,authToken,nscert,nspairname):
    payload = json.dumps(json_string)
    response = requests.post(url, data=payload, headers=headers, verify=False)
    print "Create Netscaler CA CERT: %s" % response.reason
+   print response.text
 
 def linkSSL(connectiontype,nitroNSIP,authToken, nschainname, nspairname):
    url = '%s://%s/nitro/v1/config/sslcertkey?action=link' % (connectiontype, nitroNSIP)
@@ -216,6 +223,7 @@ def linkSSL(connectiontype,nitroNSIP,authToken, nschainname, nspairname):
    payload = json.dumps(json_string)
    response = requests.post(url, data=payload, headers=headers, verify=False)
    print "Link Netscaler CERTS: %s" % response.reason
+   print response.text
 
 authToken = getAuthCookie(connectiontype,nitroNSIP,nitroUser,nitroPass)
 if whattodo == "save":
@@ -224,7 +232,7 @@ if whattodo == "save":
    localchain = sys.argv[4]
    domain = sys.argv[5]
    m = re.search('(.+?)(?=\.)', domain)
-   nspairname = '%s-%s' % (nspairname, m.group(0))
+   nspairname = '%s-%s' % (nspairname, domain)
    nscert = '%s-%s.pem' % (nscert, domain)
    nskey = '%s-%s.pem' % (nskey, domain)
    existcode = GetSSL(connectiontype,nitroNSIP,authToken, nspairname)
@@ -259,15 +267,15 @@ elif whattodo == "challenge":
    CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value)
    CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname)
    domaincount = polpristart + domaincount
-   
+
    if viptype == "csw":
        BindrespPolCSW(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount)
    elif viptype == "lb":
-       BindrespPolLB(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount)  
+       BindrespPolLB(connectiontype,nitroNSIP,authToken,polname,nsvip,domaincount)
    else:
        print "Invalid VIP Type.  Check config"
        os.exit()
-  
+
 elif whattodo == "clean":
    challenge_domain = sys.argv[2]
    polname = '%s-%s' % (nsresppol, challenge_domain)
@@ -276,13 +284,13 @@ elif whattodo == "clean":
    if viptype == "csw":
        UnBindrespPolCSW(connectiontype,nitroNSIP,authToken,polname,nsvip)
    elif viptype == "lb":
-       UnBindrespPolLB(connectiontype,nitroNSIP,authToken,polname,nsvip)  
+       UnBindrespPolLB(connectiontype,nitroNSIP,authToken,polname,nsvip)
    else:
-       sys.exit("Invalid VIP Type.  Check config")  
+       sys.exit("Invalid VIP Type.  Check config")
    DeleterespPol(connectiontype,nitroNSIP,authToken,polname)
    DeleterespAct(connectiontype,nitroNSIP,authToken,actname)
 elif whattodo == "saveconfig":
     print "Saving Netscaler Configuration"
     SaveNSConfig(connectiontype,nitroNSIP,authToken)
-   
+
 logOut(connectiontype,nitroNSIP,authToken)
