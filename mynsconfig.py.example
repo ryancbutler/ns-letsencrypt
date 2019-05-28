@@ -2,6 +2,7 @@ nitroNSIP = "192.168.2.54"
 nitroUser = "nsroot"
 nitroPass = "nsroot"
 
+#don't delete passplain. It is random and is only used as a dummy passphrase when creating the server certificate (NetScaler requires a passphrase for pem files)
 passplain = "#S0m3C0mpl3xPassw0rd123#"
 
 
