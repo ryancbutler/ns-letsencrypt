@@ -223,10 +223,10 @@ if whattodo == "save":
    localkey = sys.argv[3]
    localchain = sys.argv[4]
    domain = sys.argv[5]
-   m = re.search('(.+?)(?=\.)', domain)
-   nspairname = '%s-%s' % (nspairname, m.group(0))
-   nscert = '%s-%s.pem' % (nscert, domain)
-   nskey = '%s-%s.pem' % (nskey, domain)
+   m = re.search("(.+?)(?=\.)", domain)
+   nspairname = nspairname + "-" + m.group(0)[:20]
+   nscert = nscert + "-" + m.group(0)[:20] + ".cert"
+   nskey = nskey + "-" + m.group(0)[:20] + ".key"
    existcode = GetSSL(connectiontype,nitroNSIP,authToken, nspairname)
    if existcode == 200:
        print "Using existing cert"
@@ -253,8 +253,8 @@ elif whattodo == "challenge":
    token_value = sys.argv[3]
    challenge_domain = sys.argv[4]
    domaincount = int(sys.argv[5])
-   polname = '%s-%s' % (nsresppol, challenge_domain)
-   actname = '%s-%s' % (nsrespact, challenge_domain)
+   polname = nsresppol + "-" + challenge_domain[:20]
+   actname = nsrespact + "-" + challenge_domain[:20]
    print "Creating Challenge Policy for %s" % challenge_domain
    CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value)
    CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname)
@@ -270,8 +270,8 @@ elif whattodo == "challenge":
   
 elif whattodo == "clean":
    challenge_domain = sys.argv[2]
-   polname = '%s-%s' % (nsresppol, challenge_domain)
-   actname = '%s-%s' % (nsrespact, challenge_domain)
+   polname = nsresppol + "-" + challenge_domain[:20]
+   actname = nsrespact + "-" + challenge_domain[:20]
    print "Removing Challenge Policy for %s" % challenge_domain
    if viptype == "csw":
        UnBindrespPolCSW(connectiontype,nitroNSIP,authToken,polname,nsvip)
