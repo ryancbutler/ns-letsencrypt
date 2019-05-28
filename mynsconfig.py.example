@@ -2,12 +2,15 @@ nitroNSIP = "192.168.2.54"
 nitroUser = "nsroot"
 nitroPass = "nsroot"
 
+passplain = "#S0m3C0mpl3xPassw0rd123#"
+
+
 #Use HTTP or HTTPs to connect to Netscaler
 connectiontype = "https"
 
 #Certificate and private key file names on Netscaler
 #Pair Name Prefix (le-certificate-mydomain)
-nspairname = "le-certificate"
+nspairname = "le-"
 #File Name Prefix (le-cert-myhostname.domain.com.pem)
 nscert = "le-cert"
 nskey = "le-privkey"
