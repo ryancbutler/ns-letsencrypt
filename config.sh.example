@@ -4,7 +4,7 @@ KEYSIZE="2048"
 PRIVATE_KEY_RENEW="no"
 
 #USE BELOW CA FOR TESTING OTHERWISE YOU MIGHT GET BANNED FROM LE https://community.letsencrypt.org/t/rate-limits-for-lets-encrypt/6769
-CA="https://acme-staging.api.letsencrypt.org/directory"
+CA="https://acme-staging-v02.api.letsencrypt.org/directory"
 
 HOOK_CHAIN="no"
 WELLKNOWN="/root/ns-letsencrypt/www-temp"
