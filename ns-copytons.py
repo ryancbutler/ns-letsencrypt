@@ -223,7 +223,7 @@ if whattodo == "save":
    localkey = sys.argv[3]
    localchain = sys.argv[4]
    domain = sys.argv[5]
-   m = zlib.crc32(domain.encode('utf8'))
+   m = str(zlib.crc32(domain))
    nspairname = nspairname + "-" + m
    nscert = nscert + "-" + m + ".cert"
    nskey = nskey + "-" + m + ".key"
@@ -253,8 +253,8 @@ elif whattodo == "challenge":
    token_value = sys.argv[3]
    challenge_domain = sys.argv[4]
    domaincount = int(sys.argv[5])
-   polname = nsresppol + "-" + zlib.crc32(challenge_domain.encode('utf8'))
-   actname = nsrespact + "-" + zlib.crc32(challenge_domain.encode('utf8'))
+   polname = nsresppol + "-" + str(zlib.crc32(challenge_domain))
+   actname = nsrespact + "-" + str(zlib.crc32(challenge_domain))
    print("Creating Challenge Policy for %s" % challenge_domain)
    CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value)
    CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname)
@@ -270,8 +270,8 @@ elif whattodo == "challenge":
   
 elif whattodo == "clean":
    challenge_domain = sys.argv[2]
-   polname = nsresppol + "-" + zlib.crc32(challenge_domain.encode('utf8'))
-   actname = nsrespact + "-" + zlib.crc32(challenge_domain.encode('utf8'))
+   polname = nsresppol + "-" + str(zlib.crc32(challenge_domain))
+   actname = nsrespact + "-" + str(zlib.crc32(challenge_domain))
    print("Removing Challenge Policy for %s" % challenge_domain)
    if viptype == "csw":
        UnBindrespPolCSW(connectiontype,nitroNSIP,authToken,polname,nsvip)
