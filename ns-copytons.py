@@ -3,7 +3,7 @@
 #USE AT OWN RISK
 
 #Imports
-import json, requests, base64, sys, os, re
+import json, zlib, requests, base64, sys, os, re
 requests.packages.urllib3.disable_warnings()
 #imports variables used for script
 from mynsconfig import *
@@ -27,7 +27,7 @@ def getAuthCookie(connectiontype,nitroNSIP,nitroUser,nitroPass):
    }
    payload = json.dumps(json_string)
    try:
-     response = requests.post(url, data=payload, headers=headers, verify=False, timeout=1.0)
+     response = requests.post(url, data=payload, headers=headers, verify=False, timeout=10.0)
      response.raise_for_status()      
    except requests.exceptions.RequestException as e:
      print(e)
@@ -223,10 +223,10 @@ if whattodo == "save":
    localkey = sys.argv[3]
    localchain = sys.argv[4]
    domain = sys.argv[5]
-   m = re.search("(.+?)(?=\.)", domain)
-   nspairname = nspairname + "-" + m.group(0)[:20]
-   nscert = nscert + "-" + m.group(0)[:20] + ".cert"
-   nskey = nskey + "-" + m.group(0)[:20] + ".key"
+   m = hex(zlib.crc32(domain.encode()) & 0xffffffff)
+   nspairname = nspairname + "-" + m
+   nscert = nscert + "-" + m + ".cert"
+   nskey = nskey + "-" + m + ".key"
    existcode = GetSSL(connectiontype,nitroNSIP,authToken, nspairname)
    if existcode == 200:
        print("Using existing cert")
@@ -253,8 +253,8 @@ elif whattodo == "challenge":
    token_value = sys.argv[3]
    challenge_domain = sys.argv[4]
    domaincount = int(sys.argv[5])
-   polname = nsresppol + "-" + challenge_domain[:20]
-   actname = nsrespact + "-" + challenge_domain[:20]
+   polname = nsresppol + "-" + hex(zlib.crc32(challenge_domain.encode()) & 0xffffffff)
+   actname = nsrespact + "-" + hex(zlib.crc32(challenge_domain.encode()) & 0xffffffff)
    print("Creating Challenge Policy for %s" % challenge_domain)
    CreaterespAct(connectiontype,nitroNSIP,authToken,actname,token_value)
    CreaterespPol(connectiontype,nitroNSIP,authToken,polname,token_filename,actname)
@@ -270,8 +270,8 @@ elif whattodo == "challenge":
   
 elif whattodo == "clean":
    challenge_domain = sys.argv[2]
-   polname = nsresppol + "-" + challenge_domain[:20]
-   actname = nsrespact + "-" + challenge_domain[:20]
+   polname = nsresppol + "-" + hex(zlib.crc32(challenge_domain.encode()) & 0xffffffff)
+   actname = nsrespact + "-" + hex(zlib.crc32(challenge_domain.encode()) & 0xffffffff)
    print("Removing Challenge Policy for %s" % challenge_domain)
    if viptype == "csw":
        UnBindrespPolCSW(connectiontype,nitroNSIP,authToken,polname,nsvip)
