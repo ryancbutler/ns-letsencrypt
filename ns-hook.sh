@@ -19,16 +19,26 @@ deploy_challenge() {
     #   validation, this is what you want to put in the _acme-challenge
     #   TXT record. For HTTP validation it is the value that is expected
     #   be found in the $TOKEN_FILENAME file.
-    counter_curr=$(< "$counter_file" )
-    connect=$(< "$connect_file" )
-    if [ $connect == "1" ]
-    then
-      /root/ns-letsencrypt/ns-copytons.py challenge $TOKEN_FILENAME $TOKEN_VALUE $DOMAIN $counter_curr
-      (( ++counter_curr ))
-      printf '%s\n' "$counter_curr" >"$counter_file"
-    else
-      echo "Can't connect.  Skipping challenge"
-    fi
+    case "$CHALLENGETYPE" in
+        dns* )
+            echo -e "Please add the following record to the '$DOMAIN' DNS zone:\n"
+            echo -e "_acme-challenge.$DOMAIN IN TXT \"$TOKEN_VALUE\"\n"
+            echo "and press enter when done"
+            read -ers < /dev/tty
+            ;;
+        http*)
+            counter_curr=$(< "$counter_file" )
+            connect=$(< "$connect_file" )
+            if [ $connect == "1" ]
+            then
+                /root/ns-letsencrypt/ns-copytons.py challenge $TOKEN_FILENAME $TOKEN_VALUE $DOMAIN $counter_curr
+                (( ++counter_curr ))
+                printf '%s\n' "$counter_curr" >"$counter_file"
+            else
+                echo "Can't connect.  Skipping challenge"
+            fi
+            ;;
+    esac
 }
 
 clean_challenge() {
@@ -39,13 +49,23 @@ clean_challenge() {
     # files or DNS records that are no longer needed.
     #
     # The parameters are the same as for deploy_challenge.
-    connect=$(< "$connect_file" )
-    if [ $connect == "1" ]
-    then
-	  /root/ns-letsencrypt/ns-copytons.py clean $DOMAIN
-	else
-      echo "Can't connect.  Skipping clean"
-    fi
+    case "$CHALLENGETYPE" in
+        dns* )
+            echo -e "Please add the following record to the '$DOMAIN' DNS zone:\n"
+            echo -e "_acme-challenge.$DOMAIN IN TXT \"$TOKEN_VALUE\"\n"
+            echo "and press enter when done"
+            read -ers < /dev/tty
+            ;;
+        http*)
+            connect=$(< "$connect_file" )
+            if [ $connect == "1" ]
+            then
+                /root/ns-letsencrypt/ns-copytons.py clean $DOMAIN
+            else
+                echo "Can't connect.  Skipping clean"
+            fi
+            ;;
+    esac
 }
 
 deploy_cert() {
@@ -70,10 +90,10 @@ deploy_cert() {
     # - TIMESTAMP
     #   Timestamp when the specified certificate was created.
     connect=$(< "$connect_file" )
-	if [ $connect == "1" ]
+        if [ $connect == "1" ]
     then 
-	  /root/ns-letsencrypt/ns-copytons.py save $CERTFILE $KEYFILE $CHAINFILE $DOMAIN
-	else
+          /root/ns-letsencrypt/ns-copytons.py save $CERTFILE $KEYFILE $CHAINFILE $DOMAIN
+        else
       echo "Can't connect.  Skipping deploy"
     fi
 }
