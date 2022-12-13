@@ -10,3 +10,7 @@ HOOK_CHAIN="no"
 WELLKNOWN="/root/ns-letsencrypt/www-temp"
 # E-mail to use during the registration (default: <unset>)
 CONTACT_EMAIL="admin@yourdomain.com"
+
+#Challenge Type
+#Change to dns-01 for DNS challenge
+CHALLENGETYPE="http-01"
