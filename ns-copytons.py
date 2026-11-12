@@ -225,7 +225,7 @@ if whattodo == "save":
    localkey = sys.argv[3]
    localchain = sys.argv[4]
    domain = sys.argv[5]
-   m = re.search("(.+?)(?=\.)", domain)
+   m = re.search(r"(.+?)(?=\.)", domain)
    nspairname = nspairname + "-" + m.group(0)[:20]
    nscert = nscert + "-" + m.group(0)[:20] + ".cert"
    nskey = nskey + "-" + m.group(0)[:20] + ".key"
